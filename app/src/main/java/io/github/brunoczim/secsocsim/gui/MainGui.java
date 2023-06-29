@@ -1,8 +1,6 @@
 package io.github.brunoczim.secsocsim.gui;
 
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -30,13 +28,11 @@ public class MainGui implements MainUi {
         this.addressField = new JTextField();
 
         JButton connectButton = new JButton("Connect");
-        connectButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    self.connect();
-                } catch (Exception exc) {
-                    exc.printStackTrace();
-                }
+        connectButton.addActionListener((event) -> {
+            try {
+                self.connect();
+            } catch (Exception exc) {
+                exc.printStackTrace();
             }
         });
 

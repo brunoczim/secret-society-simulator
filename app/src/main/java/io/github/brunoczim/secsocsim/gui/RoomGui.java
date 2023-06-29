@@ -1,8 +1,6 @@
 package io.github.brunoczim.secsocsim.gui;
 
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 
 import javax.swing.BoxLayout;
@@ -33,13 +31,11 @@ class RoomGui implements RoomUi {
         JScrollPane messageInputPane = new JScrollPane(this.messageInput);
 
         JButton sendButton = new JButton("Send");
-        sendButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    self.sendMessage();
-                } catch (Exception exc) {
-                    exc.printStackTrace();
-                }
+        sendButton.addActionListener((event) -> {
+            try {
+                self.sendMessage();
+            } catch (Exception exc) {
+                exc.printStackTrace();
             }
         });
 

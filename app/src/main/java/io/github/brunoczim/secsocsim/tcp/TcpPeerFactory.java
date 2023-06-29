@@ -7,7 +7,14 @@ import io.github.brunoczim.secsocsim.p2p.Peer;
 import io.github.brunoczim.secsocsim.p2p.PeerFactory;
 
 public class TcpPeerFactory implements PeerFactory {
+    private TcpCommandParser[] commandParsers;
+
     public static int DEFAULT_PORT = 3303;
+
+    public TcpPeerFactory() {
+        this.commandParsers = new TcpCommandParser[256];
+        this.commandParsers[243] = new TcpMessageCommandParser();
+    }
 
     @Override
     public Peer createPeer(String parentAddress, String localAddress) throws IOException {

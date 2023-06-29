@@ -1,5 +1,6 @@
 package io.github.brunoczim.secsocsim.tcp;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import io.github.brunoczim.secsocsim.p2p.Firewall;
 import io.github.brunoczim.secsocsim.p2p.IncomingMessageHandler;
 import io.github.brunoczim.secsocsim.p2p.Peer;
 
@@ -55,43 +57,21 @@ public class TcpPeer implements Peer {
         this.connections.add(connection);
         this.receiveTasks.put(connection, CompletableFuture.runAsync(() -> {
             try {
-                InputStream inputStream = connection.getInputStream();
-                int current = inputStream.read();
-                while (current >= 0) {
-                    switch (current) {
-                        case 0:
-                            current = -1;
-                            break;
-                        case 1:
-                            this.receive(this.decodeString(inputStream), connection);
-                            break;
-                    }
-                    if (current >= 0) {
-                        current = inputStream.read();
-                    }
+                InputStream stream = connection.getInputStream();
+                TcpReader reader = new TcpReader(stream);
+                for (;;) {
+
                 }
+            } catch (EOFException exc) {
+
             } catch (IOException exc) {
                 exc.printStackTrace();
             }
         }));
     }
 
-    private int decodeInt(InputStream inputStream) throws IOException {
-        byte[] buffer = new byte[4];
-        inputStream.read(buffer);
-        return ((int) buffer[0]) | (((int) buffer[1]) << 8)
-                | (((int) buffer[2]) << 16) | (((int) buffer[3]) << 24);
-    }
-
-    private String decodeString(InputStream inputStream) throws IOException {
-        int length = this.decodeInt(inputStream);
-        byte[] buffer = new byte[length];
-        return new String(buffer, Charset.forName("UTF-8"));
-    }
-
     private void sendToNode(Socket connection, String message) {
         try {
-            connection.getOutputStream().write(message.getBytes());
         } catch (IOException exc) {
             exc.printStackTrace();
         }
@@ -110,6 +90,10 @@ public class TcpPeer implements Peer {
             }
         }
         CompletableFuture.allOf(futures);
+    }
+
+    @Override
+    public void setFirewall(Firewall firewall) {
     }
 
     @Override

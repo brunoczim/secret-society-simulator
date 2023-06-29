@@ -6,4 +6,6 @@ public interface Peer extends Closeable {
     public void send(String message);
 
     public void setIncomingMessageHandler(IncomingMessageHandler handler);
+
+    public void setFirewall(Firewall firewall);
 }

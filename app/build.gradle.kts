@@ -33,7 +33,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("io.github.brunoczim.secsocsim.App")
+    mainClass.set("io.github.brunoczim.secsocsim.Main")
 }
 
 tasks.named<Test>("test") {
