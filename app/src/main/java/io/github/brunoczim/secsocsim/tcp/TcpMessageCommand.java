@@ -1,6 +1,7 @@
 package io.github.brunoczim.secsocsim.tcp;
 
 import java.io.IOException;
+import java.net.Socket;
 
 class TcpMessageCommand implements TcpCommand {
     private String message;
@@ -10,7 +11,8 @@ class TcpMessageCommand implements TcpCommand {
     }
 
     @Override
-    public void execute(TcpPeer peer) throws IOException {
+    public void execute(TcpPeer peer, Socket sender) throws IOException {
+        peer.sendMessage(this.message);
     }
 
     @Override

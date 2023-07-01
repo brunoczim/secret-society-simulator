@@ -7,7 +7,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +23,8 @@ public class TcpPeer implements Peer {
     private Collection<Socket> connections;
     private IncomingMessageHandler incomingMessageHandler;
     private Map<Socket, CompletableFuture<Void>> receiveTasks;
+
+    private static final TcpCommandTable commandTable = new TcpCommandTable();
 
     TcpPeer(InetAddress parentAddress, int parentPort, int localPort) throws IOException {
         this.server = new ServerSocket(localPort);
@@ -60,7 +61,7 @@ public class TcpPeer implements Peer {
                 InputStream stream = connection.getInputStream();
                 TcpReader reader = new TcpReader(stream);
                 for (;;) {
-
+                    TcpPeer.commandTable.parseNext(reader).execute(this, connection);
                 }
             } catch (EOFException exc) {
 
@@ -70,22 +71,25 @@ public class TcpPeer implements Peer {
         }));
     }
 
-    private void sendToNode(Socket connection, String message) {
+    private void sendMessageOnce(Socket connection, String message) {
         try {
+            TcpCommand command = new TcpMessageCommand(message);
+            command.emit(new TcpWriter(connection.getOutputStream()));
         } catch (IOException exc) {
             exc.printStackTrace();
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected void receive(String message, Socket sender) {
+    protected void receiveMessage(String message, Socket sender) {
         int size = this.connections.size();
         CompletableFuture<Void>[] futures = (CompletableFuture<Void>[]) new CompletableFuture[size];
         futures[0] = CompletableFuture.runAsync(() -> this.incomingMessageHandler.receive(message));
         int i = 1;
         for (Socket connection : this.connections) {
             if (connection != sender) {
-                futures[i] = CompletableFuture.runAsync(() -> this.sendToNode(connection, message));
+                futures[i] = CompletableFuture
+                        .runAsync(() -> this.sendMessageOnce(connection, message));
                 i++;
             }
         }
@@ -98,12 +102,13 @@ public class TcpPeer implements Peer {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void send(String message) {
+    public void sendMessage(String message) {
         int size = this.connections.size();
         CompletableFuture<Void>[] futures = (CompletableFuture<Void>[]) new CompletableFuture[size];
         int i = 0;
         for (Socket connection : this.connections) {
-            futures[i] = CompletableFuture.runAsync(() -> this.sendToNode(connection, message));
+            futures[i] = CompletableFuture
+                    .runAsync(() -> this.sendMessageOnce(connection, message));
             i++;
         }
         CompletableFuture.allOf(futures);
