@@ -8,8 +8,8 @@ public class SpscChannel<T> {
     private Semaphore writePermits;
     private Semaphore readPermits;
     private AtomicReference<T>[] buffer;
-    private volatile int front;
-    private volatile int back;
+    private int front;
+    private int back;
 
     @SuppressWarnings("unchecked")
     public SpscChannel(int capacity) {
