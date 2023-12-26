@@ -101,4 +101,48 @@ class SpscChannelTest {
 
         assertDoesNotThrow(() -> sender.join());
     }
+
+    @Test
+    void multiThreadedSpscLimitedBySender() {
+        final SpscChannel<Integer> channel = new SpscChannel<>(5);
+        Thread sender = new Thread(() -> {
+            assertDoesNotThrow(() -> {
+                for (int i = 0; i < 800; i++) {
+                    final int nanos = (800 - i) * 100;
+                    assertDoesNotThrow(() -> Thread.sleep(0, nanos));
+                    channel.send(i);
+                }
+            });
+        });
+
+        sender.start();
+
+        for (int i = 0; i < 800; i++) {
+            assertEquals(i, assertDoesNotThrow(() -> channel.receive()));
+        }
+
+        assertDoesNotThrow(() -> sender.join());
+    }
+
+    @Test
+    void multiThreadedSpscLimitedByReceiver() {
+        final SpscChannel<Integer> channel = new SpscChannel<>(5);
+        Thread sender = new Thread(() -> {
+            assertDoesNotThrow(() -> {
+                for (int i = 0; i < 800; i++) {
+                    channel.send(i);
+                }
+            });
+        });
+
+        sender.start();
+
+        for (int i = 0; i < 800; i++) {
+            final int nanos = (800 - i) * 100;
+            assertDoesNotThrow(() -> Thread.sleep(0, nanos));
+            assertEquals(i, assertDoesNotThrow(() -> channel.receive()));
+        }
+
+        assertDoesNotThrow(() -> sender.join());
+    }
 }
