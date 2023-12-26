@@ -15,11 +15,11 @@ public class SpscChannel<T> {
     public SpscChannel(int capacity) {
         if (capacity < 0) {
             throw new IllegalArgumentException(
-                "channel capacity cannot be negative, given" + capacity
+                "channel capacity cannot be negative, given " + capacity
             );
         }
-        this.writePermits = new Semaphore(capacity, true);
-        this.readPermits = new Semaphore(0, true);
+        this.writePermits = new Semaphore(capacity, false);
+        this.readPermits = new Semaphore(0, false);
         this.buffer = (AtomicReference<T>[]) new AtomicReference[capacity];
         for (int i = 0; i < this.buffer.length; i++) {
             this.buffer[i] = new AtomicReference<T>(null);
