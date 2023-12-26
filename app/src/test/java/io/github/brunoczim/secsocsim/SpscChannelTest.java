@@ -88,7 +88,6 @@ class SpscChannelTest {
         Thread sender = new Thread(() -> {
             assertDoesNotThrow(() -> {
                 for (int i = 0; i < 8000; i++) {
-                    System.out.println("a" + channel.debug());
                     channel.send(i);
                 }
             });
@@ -97,7 +96,6 @@ class SpscChannelTest {
         sender.start();
 
         for (int i = 0; i < 8000; i++) {
-            System.out.println("b" + channel.debug());
             assertEquals(i, assertDoesNotThrow(() -> channel.receive()));
         }
 
