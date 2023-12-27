@@ -1,27 +1,27 @@
 package io.github.brunoczim.secsocsim.ui;
 
 public abstract class UiConfig {
-    private ConnectionRequestHandler connectionRequestHandler;
-    private MessageSendHandler messageSendHandler;
+    private ConnectionOpeningHandler connectionOpeningHandler;
+    private MessageSendingHandler messageSendingHandler;
 
-    public UiConfig setConnectionRequestHandler(
-        ConnectionRequestHandler handler
+    public UiConfig setConnectionOpeningHandler(
+        ConnectionOpeningHandler handler
     ) {
-        this.connectionRequestHandler = handler;
+        this.connectionOpeningHandler = handler;
         return this;
     }
 
-    public UiConfig setMessageSendHandler(MessageSendHandler handler) {
-        this.messageSendHandler = handler;
+    public UiConfig setMessageSendingHandler(MessageSendingHandler handler) {
+        this.messageSendingHandler = handler;
         return this;
     }
 
-    public ConnectionRequestHandler getConnectionRequestHandler() {
-        return this.connectionRequestHandler;
+    public ConnectionOpeningHandler getConnectionOpeningHandler() {
+        return this.connectionOpeningHandler;
     }
 
-    public MessageSendHandler getMessageSendHandler() {
-        return this.messageSendHandler;
+    public MessageSendingHandler getMessageSendingHandler() {
+        return this.messageSendingHandler;
     }
 
     public abstract MainUi finish();

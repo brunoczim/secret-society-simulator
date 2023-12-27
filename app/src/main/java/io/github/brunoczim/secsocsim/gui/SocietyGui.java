@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import io.github.brunoczim.secsocsim.ui.MessageSendHandler;
+import io.github.brunoczim.secsocsim.ui.MessageSendingHandler;
 import io.github.brunoczim.secsocsim.ui.SocietyUi;
 
 class SocietyGui implements SocietyUi {
@@ -52,7 +52,7 @@ class SocietyGui implements SocietyUi {
 
     private synchronized void sendMessage() throws Exception {
         String message = this.messageInput.getText();
-        MessageSendHandler handler = this.config.getMessageSendHandler();
+        MessageSendingHandler handler = this.config.getMessageSendingHandler();
         if (handler != null) {
             handler.sendMessage(message);
         }

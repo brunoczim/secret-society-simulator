@@ -10,7 +10,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import io.github.brunoczim.secsocsim.ui.MainUi;
-import io.github.brunoczim.secsocsim.ui.ConnectionRequestHandler;
+import io.github.brunoczim.secsocsim.ui.ConnectionOpeningHandler;
 
 class MainGui implements MainUi {
     private GuiConfig config;
@@ -43,14 +43,11 @@ class MainGui implements MainUi {
 
     private synchronized void connect() {
         try {
-            ConnectionRequestHandler handler =
-                this.config.getConnectionRequestHandler();
+            ConnectionOpeningHandler handler =
+                this.config.getConnectionOpeningHandler();
             if (handler != null) {
                 SocietyGui societyGui = new SocietyGui(this.config);
-                handler.requestConnection(
-                    this.addressField.getText(),
-                    societyGui
-                );
+                handler.openConnection(this.addressField.getText(), societyGui);
                 societyGui.show();
             }
         } catch (Exception exc) {
